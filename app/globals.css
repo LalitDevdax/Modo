@@ -25,6 +25,19 @@
   }
 }
 
+/* Lock & hide root window scrollbar completely when full-screen menu is active */
+html.menu-open,
+body.menu-open {
+  overflow: hidden !important;
+  height: 100vh !important;
+}
+
+html.menu-open::-webkit-scrollbar,
+body.menu-open::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+}
+
 /* Custom Thin Scrollbar (Modo Theme) */
 ::-webkit-scrollbar {
   width: 6px;

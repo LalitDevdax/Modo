@@ -98,6 +98,27 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [router]);
 
+  // Lock & completely hide root window scrollbars when fullscreen navigation menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('menu-open');
+      document.documentElement.classList.add('menu-open');
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.body.classList.remove('menu-open');
+      document.documentElement.classList.remove('menu-open');
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    }
+    return () => {
+      document.body.classList.remove('menu-open');
+      document.documentElement.classList.remove('menu-open');
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [isOpen]);
+
   const handleCopyEmail = () => {
     navigator.clipboard.writeText('info@joinmodo.com');
     setIsCopied(true);
@@ -240,7 +261,7 @@ export default function Navbar() {
       {/* 2. MULTI-LAYER CURTAIN DRAWER OVERLAY */}
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-40 overflow-hidden pointer-events-auto">
+          <div className="fixed inset-0 z-40 overflow-hidden pointer-events-auto" data-lenis-prevent>
             
             {/* 4 Staggered Color Curtains */}
             {curtainLayers.map((bgClass, index) => (
@@ -264,28 +285,30 @@ export default function Navbar() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.12 }}
-                  className="relative z-50 max-w-7xl mx-auto h-full px-5 sm:px-8 md:px-12 pt-16 sm:pt-20 pb-4 flex flex-col justify-between overflow-y-auto no-scrollbar font-sans select-none"
+                  data-lenis-prevent
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                  className="relative z-50 max-w-7xl mx-auto h-full px-5 sm:px-8 md:px-12 pt-14 sm:pt-16 md:pt-18 pb-4 sm:pb-6 flex flex-col justify-between overflow-hidden touch-none font-sans select-none"
                 >
                   {/* Grid Layout */}
-                  <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 md:gap-x-12 gap-y-7 sm:gap-y-6 w-full my-auto items-start font-sans">
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 md:gap-x-12 gap-y-4 sm:gap-y-5 md:gap-y-6 w-full my-auto py-1 items-start font-sans">
 
                     {/* SECTION 1: Navigation */}
                     <div className="md:col-span-5 flex flex-col justify-between">
                       <div>
-                        <SlideUpItem delay={0.02} className="mb-3 sm:mb-4">
+                        <SlideUpItem delay={0.02} className="mb-2 sm:mb-3">
                           <div className="flex items-center gap-2 text-[11px] font-medium tracking-wider text-slate-400 uppercase font-sans">
                             <span className="w-1.5 h-1.5 bg-pink-500 rounded-[1px]" />
                             <span>Navigation</span>
                           </div>
                         </SlideUpItem>
 
-                        <div className="flex flex-col space-y-2.5 sm:space-y-3">
+                        <div className="flex flex-col space-y-1.5 sm:space-y-2.5">
                           {primaryLinks.map((link, idx) => (
                             <SlideUpItem key={link.title} delay={0.05 + idx * 0.04}>
                               <a
                                 href={link.href}
                                 onClick={(e) => handleLinkClick(e, link.href)}
-                                className="inline-flex items-center gap-3 sm:gap-4 text-3xl sm:text-5xl font-light tracking-tight text-slate-900 hover:text-pink-600 transition-colors cursor-pointer group font-sans py-0.5"
+                                className="inline-flex items-center gap-3 sm:gap-4 text-2xl sm:text-4xl md:text-5xl font-light tracking-tight text-slate-900 hover:text-pink-600 transition-colors cursor-pointer group font-sans py-0.5"
                               >
                                 <span className="w-2 sm:w-2.5 h-2 sm:h-2.5 bg-slate-900 group-hover:bg-pink-500 rounded-[2px] transition-colors shrink-0" />
                                 <span className="font-sans font-light">{link.title}</span>
@@ -297,28 +320,28 @@ export default function Navbar() {
                     </div>
 
                     {/* MOBILE ONLY DIVIDER BETWEEN NAVIGATION & PLATFORM OVERVIEW */}
-                    <div className="block md:hidden col-span-1 border-t border-slate-200/60 my-2" />
+                    <div className="block md:hidden col-span-1 border-t border-slate-200/60 my-1" />
 
                     {/* SECTION 2: Platform Overview */}
                     <div className="md:col-span-7 flex flex-col justify-between font-sans pt-1 md:pt-0">
                       <div>
-                        <SlideUpItem delay={0.08} className="mb-2 sm:mb-3">
+                        <SlideUpItem delay={0.08} className="mb-1.5 sm:mb-2.5">
                           <div className="flex items-center gap-2 text-[11px] font-medium tracking-wider text-slate-400 uppercase font-sans">
                             <span className="w-1.5 h-1.5 bg-pink-500 rounded-[1px]" />
                             <span>Platform Overview</span>
                           </div>
                         </SlideUpItem>
 
-                        <SlideUpItem delay={0.12} className="mb-3">
+                        <SlideUpItem delay={0.12} className="mb-2">
                           <img
                             src="/modo-logo-clean.png"
                             alt="Modo Logo"
-                            className="h-5 sm:h-6 w-auto object-contain my-1"
+                            className="h-4 sm:h-5 md:h-6 w-auto object-contain my-1"
                           />
                         </SlideUpItem>
 
                         <SlideUpItem delay={0.16}>
-                          <p className="text-sm sm:text-base text-slate-700 font-sans leading-relaxed font-normal max-w-xl">
+                          <p className="text-xs sm:text-sm md:text-base text-slate-700 font-sans leading-relaxed font-normal max-w-xl">
                             Modo helps enterprises turn AI investments into real adoption and measurable ROI. We embed directly into everyday work to support effective, safe AI usage across teams, and provide leaders with clear visibility into usage patterns, workflow impact, and where more enablement is needed.
                           </p>
                         </SlideUpItem>
@@ -327,32 +350,32 @@ export default function Navbar() {
 
                     {/* DESKTOP CENTER SPLIT BORDER DIVIDERS */}
                     <div className="hidden md:block md:col-span-5">
-                      <div className="border-t border-slate-200/60 my-3" />
+                      <div className="border-t border-slate-200/60 my-2" />
                     </div>
 
                     <div className="hidden md:block md:col-span-7">
-                      <div className="border-t border-slate-200/60 my-3" />
+                      <div className="border-t border-slate-200/60 my-2" />
                     </div>
 
                     {/* MOBILE DIVIDER BETWEEN PLATFORM OVERVIEW & BACKED BY */}
-                    <div className="block md:hidden col-span-1 border-t border-slate-200/60 my-2" />
+                    <div className="block md:hidden col-span-1 border-t border-slate-200/60 my-1" />
 
                     {/* SECTION 3: Backed By */}
-                    <div className="md:col-span-5 flex flex-col space-y-3">
+                    <div className="md:col-span-5 flex flex-col space-y-2 sm:space-y-3">
                       <div>
-                        <SlideUpItem delay={0.20} className="mb-3">
+                        <SlideUpItem delay={0.20} className="mb-2 sm:mb-3">
                           <div className="flex items-center gap-2 text-[11px] font-medium tracking-wider text-slate-400 uppercase font-sans">
                             <span className="w-1.5 h-1.5 bg-pink-500 rounded-[1px]" />
                             <span>Backed By</span>
                           </div>
                         </SlideUpItem>
                         <SlideUpItem delay={0.24}>
-                          <div className="flex flex-wrap gap-2.5 font-sans">
-                            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-medium text-slate-800 shadow-2xs">
+                          <div className="flex flex-wrap gap-2 font-sans">
+                            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-medium text-slate-800 shadow-2xs">
                               <span className="w-1.5 h-1.5 bg-slate-900 rounded-[1px]" />
                               Pear VC & Peterson Ventures
                             </span>
-                            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-pink-50/80 border border-pink-200/80 text-xs font-medium text-pink-700 shadow-2xs">
+                            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-pink-50/80 border border-pink-200/80 text-xs font-medium text-pink-700 shadow-2xs">
                               <span className="w-1.5 h-1.5 bg-pink-500 rounded-[1px]" />
                               StartX F25
                             </span>
@@ -362,31 +385,31 @@ export default function Navbar() {
                     </div>
 
                     {/* MOBILE DIVIDER BEFORE INFO GRID */}
-                    <div className="block md:hidden col-span-1 border-t border-slate-200/60 my-2" />
+                    <div className="block md:hidden col-span-1 border-t border-slate-200/60 my-1" />
 
                     {/* SECTION 4: Info Grid, Specialties & Direct Contact */}
-                    <div className="md:col-span-7 flex flex-col space-y-4 sm:space-y-5 font-sans">
+                    <div className="md:col-span-7 flex flex-col space-y-3 sm:space-y-4 font-sans">
                       
                       {/* Info Grid (HQ, Industry, Website) */}
                       <div className="text-xs font-sans">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-3">
                           <SlideUpItem delay={0.22}>
                             <div>
-                              <span className="text-slate-400 font-medium block uppercase tracking-wider text-[10px] mb-1 font-sans">Headquarters</span>
+                              <span className="text-slate-400 font-medium block uppercase tracking-wider text-[10px] mb-0.5 font-sans">Headquarters</span>
                               <span className="font-medium text-slate-900 text-xs sm:text-sm block font-sans">Stanford, CA</span>
                             </div>
                           </SlideUpItem>
 
                           <SlideUpItem delay={0.25}>
                             <div>
-                              <span className="text-slate-400 font-medium block uppercase tracking-wider text-[10px] mb-1 font-sans">Industry</span>
+                              <span className="text-slate-400 font-medium block uppercase tracking-wider text-[10px] mb-0.5 font-sans">Industry</span>
                               <span className="font-medium text-slate-900 text-xs sm:text-sm block font-sans">Software Development</span>
                             </div>
                           </SlideUpItem>
 
                           <SlideUpItem delay={0.28}>
                             <div>
-                              <span className="text-slate-400 font-medium block uppercase tracking-wider text-[10px] mb-1 font-sans">Website</span>
+                              <span className="text-slate-400 font-medium block uppercase tracking-wider text-[10px] mb-0.5 font-sans">Website</span>
                               <a
                                 href="https://joinmodo.com/"
                                 target="_blank"
@@ -402,19 +425,19 @@ export default function Navbar() {
                       </div>
 
                       {/* Specialties & Focus Areas */}
-                      <div className="pt-3 sm:pt-4 border-t border-slate-200/60 font-sans">
-                        <SlideUpItem delay={0.30} className="mb-2">
+                      <div className="pt-2 sm:pt-3 border-t border-slate-200/60 font-sans">
+                        <SlideUpItem delay={0.30} className="mb-1.5 sm:mb-2">
                           <div className="flex items-center gap-2 text-[11px] font-medium tracking-wider text-slate-400 uppercase font-sans">
                             <span className="w-1.5 h-1.5 bg-pink-500 rounded-[1px]" />
                             <span>Specialties</span>
                           </div>
                         </SlideUpItem>
                         <SlideUpItem delay={0.34}>
-                          <div className="flex flex-wrap gap-2 font-sans">
+                          <div className="flex flex-wrap gap-1.5 sm:gap-2 font-sans">
                             {specialties.map((spec) => (
                               <span
                                 key={spec}
-                                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-medium text-slate-800 shadow-2xs font-sans"
+                                className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-medium text-slate-800 shadow-2xs font-sans"
                               >
                                 <span className="w-1.5 h-1.5 bg-slate-900 rounded-[1px]" />
                                 {spec}
@@ -425,7 +448,7 @@ export default function Navbar() {
                       </div>
 
                       {/* Contact Mail + Interactive Copy Button */}
-                      <div className="pt-1 flex items-center justify-between font-sans">
+                      <div className="pt-0.5 flex items-center justify-between font-sans">
                         <SlideUpItem delay={0.38}>
                           <div className="flex items-center gap-2 text-xs text-slate-500 font-sans flex-wrap">
                             <span>Direct Contact:</span>
@@ -475,8 +498,8 @@ export default function Navbar() {
                   </div>
 
                   {/* Bottom Copyright Bar */}
-                  <SlideUpItem delay={0.42}>
-                    <div className="text-xs font-mono text-slate-500 pt-3 mt-3 border-t border-slate-200/60 flex items-center justify-between">
+                  <SlideUpItem delay={0.42} className="shrink-0 pt-2">
+                    <div className="text-xs font-mono text-slate-500 pt-2 sm:pt-3 mt-1 sm:mt-2 border-t border-slate-200/60 flex items-center justify-between">
                       <p>© 2026 Modo. All rights reserved.</p>
                     </div>
                   </SlideUpItem>
